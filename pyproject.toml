@@ -1,9 +1,9 @@
 [build-system]
-requires      = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name    = "hvp_mod15_notification_service"
+name = "hvp_mod15_notification_service"
 version = "0.1.0"
 requires-python = ">=3.11"
 
@@ -24,10 +24,16 @@ dev = [
     "ruff>=0.4",
 ]
 
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-testpaths    = ["tests"]
+testpaths = ["tests"]
 
 [tool.ruff]
-line-length    = 100
+line-length = 100
 target-version = "py311"
