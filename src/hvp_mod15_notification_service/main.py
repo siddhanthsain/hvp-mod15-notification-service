@@ -3,8 +3,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from .routes.channels  import router as channels_router
 from .routes.templates import router as templates_router
+from .routes.dispatch  import router as dispatch_router
 from .services.channel_store   import ChannelStore
-from .services.template_engine import TemplateEngine
+from .services.template_engine  import TemplateEngine
+from .services.provider         import ProviderRegistry
+from .services.dispatcher       import Dispatcher
 
 logging.basicConfig(
     level=logging.INFO,
@@ -17,7 +20,9 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     logger.info("MOD-15 Notification Service starting...")
     app.state.channel_store   = ChannelStore()
-    app.state.template_engine = TemplateEngine()
+    app.state.template_engine  = TemplateEngine()
+    app.state.provider_registry = ProviderRegistry(mock=True)
+    app.state.dispatcher        = Dispatcher()
     logger.info("Channel store initialised")
     logger.info("MOD-15 READY")
     yield
@@ -36,6 +41,7 @@ app = FastAPI(
 )
 app.include_router(channels_router)
 app.include_router(templates_router)
+app.include_router(dispatch_router)
 
 
 @app.get("/health", tags=["Health"])
