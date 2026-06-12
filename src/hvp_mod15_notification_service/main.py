@@ -3,11 +3,13 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from .routes.channels  import router as channels_router
 from .routes.templates import router as templates_router
-from .routes.dispatch  import router as dispatch_router
+from .routes.dispatch    import router as dispatch_router
+from .routes.deliveries import router as deliveries_router
 from .services.channel_store   import ChannelStore
 from .services.template_engine  import TemplateEngine
 from .services.provider         import ProviderRegistry
-from .services.dispatcher       import Dispatcher
+from .services.dispatcher        import Dispatcher
+from .services.delivery_tracker  import DeliveryTracker
 
 logging.basicConfig(
     level=logging.INFO,
@@ -22,7 +24,8 @@ async def lifespan(app: FastAPI):
     app.state.channel_store   = ChannelStore()
     app.state.template_engine  = TemplateEngine()
     app.state.provider_registry = ProviderRegistry(mock=True)
-    app.state.dispatcher        = Dispatcher()
+    app.state.dispatcher         = Dispatcher()
+    app.state.delivery_tracker   = DeliveryTracker()
     logger.info("Channel store initialised")
     logger.info("MOD-15 READY")
     yield
@@ -42,6 +45,7 @@ app = FastAPI(
 app.include_router(channels_router)
 app.include_router(templates_router)
 app.include_router(dispatch_router)
+app.include_router(deliveries_router)
 
 
 @app.get("/health", tags=["Health"])
