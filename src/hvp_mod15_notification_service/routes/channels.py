@@ -22,8 +22,8 @@ async def get_channel(recipient_id: str, request: Request):
 
 @router.get("", response_model=list[ChannelConfigResponse])
 async def list_channels(
+    request: Request,
     recipient_type: str | None = Query(None),
-    request: Request = None,
 ):
     if recipient_type:
         return request.app.state.channel_store.list_by_type(recipient_type)

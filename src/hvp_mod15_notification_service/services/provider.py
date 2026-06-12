@@ -26,18 +26,18 @@ class MockProvider:
 
     def send(
         self,
-        channel:    str,
-        recipient:  str,
-        subject:    str | None,
-        body:       str,
+        channel: str,
+        recipient: str,
+        subject: str | None,
+        body: str,
     ) -> dict:
         record = {
-            "channel":     channel,
-            "recipient":   recipient,
-            "subject":     subject,
-            "body":        body,
-            "sent_at":     _now(),
-            "provider":    "MOCK",
+            "channel": channel,
+            "recipient": recipient,
+            "subject": subject,
+            "body": body,
+            "sent_at": _now(),
+            "provider": "MOCK",
             "provider_id": f"MOCK-{len(self._sent):06d}",
         }
         self._sent.append(record)
@@ -58,11 +58,11 @@ class ProviderRegistry:
     """Maps channel types to provider instances."""
 
     def __init__(self, mock: bool = True) -> None:
-        self._mock     = MockProvider()
+        self._mock = MockProvider()
         self._use_mock = mock
 
     def get_provider(self, channel: str):
-        return self._mock   # In production: return real provider per channel
+        return self._mock  # In production: return real provider per channel
 
     @property
     def mock_provider(self) -> MockProvider:

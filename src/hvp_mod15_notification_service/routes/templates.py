@@ -9,15 +9,15 @@ router = APIRouter(prefix="/api/v1/notifications/templates", tags=["Templates"])
 
 class AddTemplateRequest(BaseModel):
     event_type: str = Field(..., min_length=3)
-    channel:    str = Field(..., pattern="^(SMS|EMAIL|WHATSAPP|IN_APP)$")
-    subject:    str | None = None
-    body:       str = Field(..., min_length=5)
+    channel: str = Field(..., pattern="^(SMS|EMAIL|WHATSAPP|IN_APP)$")
+    subject: str | None = None
+    body: str = Field(..., min_length=5)
 
 
 class RenderRequest(BaseModel):
-    event_type: str  = Field(..., min_length=3)
-    channel:    str  = Field(..., pattern="^(SMS|EMAIL|WHATSAPP|IN_APP)$")
-    variables:  dict = Field(default_factory=dict)
+    event_type: str = Field(..., min_length=3)
+    channel: str = Field(..., pattern="^(SMS|EMAIL|WHATSAPP|IN_APP)$")
+    variables: dict = Field(default_factory=dict)
 
 
 @router.get("")
@@ -46,6 +46,7 @@ async def render_template(body: RenderRequest, request: Request):
         variables=body.variables,
     )
     if not result:
-        raise HTTPException(404,
-            detail=f"No template for event_type={body.event_type} channel={body.channel}")
+        raise HTTPException(
+            404, detail=f"No template for event_type={body.event_type} channel={body.channel}"
+        )
     return result
