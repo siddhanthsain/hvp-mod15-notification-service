@@ -6,19 +6,19 @@ from hvp_mod15_notification_service.schemas.channel import ChannelConfig
 
 
 COORD_CONFIG = {
-    "recipient_id":   "coord01",
+    "recipient_id": "coord01",
     "recipient_type": "HOSPITAL_COORDINATOR",
-    "channels":       ["EMAIL", "IN_APP"],
-    "email":          "coord01@aiims.in",
-    "phone":          None,
+    "channels": ["EMAIL", "IN_APP"],
+    "email": "coord01@aiims.in",
+    "phone": None,
 }
 
 PATIENT_CONFIG = {
-    "recipient_id":   "ABHA-1234567890",
+    "recipient_id": "ABHA-1234567890",
     "recipient_type": "PATIENT",
-    "channels":       ["SMS"],
-    "email":          None,
-    "phone":          "+919876543210",
+    "channels": ["SMS"],
+    "email": None,
+    "phone": "+919876543210",
 }
 
 
@@ -39,6 +39,7 @@ def client():
 
 # ── ChannelStore unit tests ───────────────────────────────────────────────────
 
+
 def test_upsert_returns_channel_id(store):
     config = store.upsert(COORD_CONFIG)
     assert config["channel_id"].startswith("CHN-")
@@ -51,8 +52,8 @@ def test_upsert_sets_recipient_id(store):
 
 def test_upsert_sets_channels(store):
     config = store.upsert(COORD_CONFIG)
-    assert "EMAIL"   in config["channels"]
-    assert "IN_APP"  in config["channels"]
+    assert "EMAIL" in config["channels"]
+    assert "IN_APP" in config["channels"]
 
 
 def test_upsert_same_recipient_updates_not_creates(store):
@@ -110,7 +111,7 @@ def test_deactivate_returns_false_for_unknown(store):
 def test_get_channels_for_recipient_returns_channels(store):
     store.upsert(COORD_CONFIG)
     channels = store.get_channels_for_recipient("coord01")
-    assert "EMAIL"  in channels
+    assert "EMAIL" in channels
     assert "IN_APP" in channels
 
 
@@ -126,39 +127,47 @@ def test_deactivated_recipient_returns_empty_channels(store):
 
 def test_default_channels_defined():
     assert "HOSPITAL_COORDINATOR" in DEFAULT_CHANNELS
-    assert "PATIENT"              in DEFAULT_CHANNELS
-    assert "INSURER_ADJUDICATOR"  in DEFAULT_CHANNELS
-    assert "SMS"   in DEFAULT_CHANNELS["PATIENT"]
+    assert "PATIENT" in DEFAULT_CHANNELS
+    assert "INSURER_ADJUDICATOR" in DEFAULT_CHANNELS
+    assert "SMS" in DEFAULT_CHANNELS["PATIENT"]
     assert "EMAIL" in DEFAULT_CHANNELS["HOSPITAL_COORDINATOR"]
 
 
 # ── Schema validation ─────────────────────────────────────────────────────────
 
+
 def test_invalid_email_rejected():
     with pytest.raises(Exception):
         ChannelConfig(
-            recipient_id="test", recipient_type="HOSPITAL_COORDINATOR",
-            channels=["EMAIL"], email="notanemail",
+            recipient_id="test",
+            recipient_type="HOSPITAL_COORDINATOR",
+            channels=["EMAIL"],
+            email="notanemail",
         )
 
 
 def test_invalid_phone_rejected():
     with pytest.raises(Exception):
         ChannelConfig(
-            recipient_id="test", recipient_type="PATIENT",
-            channels=["SMS"], phone="notaphone",
+            recipient_id="test",
+            recipient_type="PATIENT",
+            channels=["SMS"],
+            phone="notaphone",
         )
 
 
 def test_valid_email_accepted():
     c = ChannelConfig(
-        recipient_id="test", recipient_type="HOSPITAL_COORDINATOR",
-        channels=["EMAIL"], email="test@example.com",
+        recipient_id="test",
+        recipient_type="HOSPITAL_COORDINATOR",
+        channels=["EMAIL"],
+        email="test@example.com",
     )
     assert c.email == "test@example.com"
 
 
 # ── Routes ────────────────────────────────────────────────────────────────────
+
 
 def test_upsert_channel_returns_201(client):
     resp = client.post("/api/v1/notifications/channels", json=COORD_CONFIG)

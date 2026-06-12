@@ -12,19 +12,21 @@ router = APIRouter(prefix="/api/v1/notifications", tags=["Notify"])
 
 
 class NotifyRequest(BaseModel):
-    event_type:    str  = Field(..., min_length=3,
-                                description="e.g. claim.approved, adjudicator.assigned")
-    event_payload: dict = Field(default_factory=dict,
-                                description="Variables for template + recipient IDs")
-    source_module: str  = Field("", max_length=20)
+    event_type: str = Field(
+        ..., min_length=3, description="e.g. claim.approved, adjudicator.assigned"
+    )
+    event_payload: dict = Field(
+        default_factory=dict, description="Variables for template + recipient IDs"
+    )
+    source_module: str = Field("", max_length=20)
 
 
 class NotifyResponse(BaseModel):
-    event_type:       str
-    source_module:    str
+    event_type: str
+    source_module: str
     dispatched_count: int
-    delivered:        int
-    failed:           int
+    delivered: int
+    failed: int
     notification_ids: list[str]
 
 
@@ -48,20 +50,28 @@ async def notify(body: NotifyRequest, request: Request):
     # Record all results in delivery tracker
     notification_ids = []
     delivered = 0
-    failed    = 0
+    failed = 0
     for r in results:
-        d = request.app.state.delivery_tracker.record({
-            **r,
-            "claim_id": body.event_payload.get("claim_id", ""),
-        })
+        d = request.app.state.delivery_tracker.record(
+            {
+                **r,
+                "claim_id": body.event_payload.get("claim_id", ""),
+            }
+        )
         notification_ids.append(d["delivery_id"])
         if d["status"] == "DELIVERED":
             delivered += 1
         else:
             failed += 1
 
-    logger.info("Notify event=%s source=%s dispatched=%s delivered=%s failed=%s",
-                body.event_type, body.source_module, len(results), delivered, failed)
+    logger.info(
+        "Notify event=%s source=%s dispatched=%s delivered=%s failed=%s",
+        body.event_type,
+        body.source_module,
+        len(results),
+        delivered,
+        failed,
+    )
 
     return NotifyResponse(
         event_type=body.event_type,
@@ -86,5 +96,5 @@ async def notification_stats(request: Request):
     return {
         **tracker_stats,
         "total_channels_configured": request.app.state.channel_store.count,
-        "total_templates":           request.app.state.template_engine.total_templates,
+        "total_templates": request.app.state.template_engine.total_templates,
     }

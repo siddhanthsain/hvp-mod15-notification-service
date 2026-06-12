@@ -8,14 +8,17 @@ router = APIRouter(prefix="/api/v1/notifications/deliveries", tags=["Deliveries"
 
 @router.get("")
 async def list_deliveries(
-    status:   str | None = Query(None),
-    channel:  str | None = Query(None),
+    request: Request,
+    status: str | None = Query(None),
+    channel: str | None = Query(None),
     claim_id: str | None = Query(None),
-    limit:    int         = Query(100, ge=1, le=1000),
-    request: Request = None,
+    limit: int = Query(100, ge=1, le=1000),
 ):
     return request.app.state.delivery_tracker.list_all(
-        status=status, channel=channel, claim_id=claim_id, limit=limit,
+        status=status,
+        channel=channel,
+        claim_id=claim_id,
+        limit=limit,
     )
 
 

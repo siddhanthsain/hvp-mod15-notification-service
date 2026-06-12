@@ -8,7 +8,7 @@ router = APIRouter(prefix="/api/v1/notifications", tags=["Dispatch"])
 
 
 class DispatchRequest(BaseModel):
-    event_type:    str  = Field(..., min_length=3)
+    event_type: str = Field(..., min_length=3)
     event_payload: dict = Field(default_factory=dict)
 
 
@@ -27,7 +27,7 @@ async def dispatch_notification(body: DispatchRequest, request: Request):
         delivery_tracker=getattr(request.app.state, "delivery_tracker", None),
     )
     return {
-        "event_type":       body.event_type,
+        "event_type": body.event_type,
         "dispatched_count": len(results),
-        "results":          results,
+        "results": results,
     }
