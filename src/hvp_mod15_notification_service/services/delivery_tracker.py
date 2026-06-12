@@ -76,9 +76,12 @@ class DeliveryTracker:
         limit:     int        = 100,
     ) -> list[dict]:
         entries = list(self._deliveries.values())
-        if status:   entries = [e for e in entries if e["status"]   == status]
-        if channel:  entries = [e for e in entries if e["channel"]  == channel]
-        if claim_id: entries = [e for e in entries if e["claim_id"] == claim_id]
+        if status:
+            entries = [e for e in entries if e["status"] == status]
+        if channel:
+            entries = [e for e in entries if e["channel"] == channel]
+        if claim_id:
+            entries = [e for e in entries if e["claim_id"] == claim_id]
         return entries[-limit:]
 
     def stats(self) -> dict:
